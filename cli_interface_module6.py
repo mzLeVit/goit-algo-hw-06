@@ -27,32 +27,33 @@ class Record:
         try:
             phone = Phone(number)
             self.phones.append(phone)
-            print(f"Phone number '{number}' added for {self.name.value}.")
+            return f"Phone number '{number}' added for {self.name.value}."
         except ValueError as e:
-            print(e)
+            return str(e)
 
     def remove_phone(self, number):
         for phone in self.phones:
             if phone.value == number:
                 self.phones.remove(phone)
-                print(f"Phone number '{number}' removed for {self.name.value}.")
-                return
-        print(f"Phone number '{number}' not found for {self.name.value}.")
+                return f"Phone number '{number}' removed for {self.name.value}."
+        return f"Phone number '{number}' not found for {self.name.value}."
 
     def edit_phone(self, old_number, new_number):
-        for phone in self.phones:
-            if phone.value == old_number:
-                phone.value = new_number
-                print(f"Phone number '{old_number}' edited to '{new_number}' for {self.name.value}.")
-                return
-        print(f"Phone number '{old_number}' not found for {self.name.value}.")
+        try:
+            new_phone = Phone(new_number)
+            for phone in self.phones:
+                if phone.value == old_number:
+                    phone.value = new_number
+                    return f"Phone number '{old_number}' edited to '{new_number}' for {self.name.value}."
+            return f"Phone number '{old_number}' not found for {self.name.value}."
+        except ValueError as e:
+            return str(e)
 
     def find_phone(self, number):
         for phone in self.phones:
             if phone.value == number:
-                print(f"Phone number '{number}' found for {self.name.value}.")
-                return
-        print(f"Phone number '{number}' not found for {self.name.value}.")
+                return phone
+        return None
 
 
 class AddressBook(UserDict):
@@ -62,17 +63,16 @@ class AddressBook(UserDict):
     def find_record(self, name):
         if name in self.data:
             return self.data[name]
-        print(f"No record found for {name}.")
+        return f"No record found for {name}."
 
     def delete_record(self, name):
         if name in self.data:
             del self.data[name]
-            print(f"Record for {name} removed from the address book.")
+            return f"Record for {name} removed from the address book."
         else:
-            print(f"No record found for {name}.")
+            return f"No record found for {name}."
 
 
-# Приклад використання
 address_book = AddressBook()
 address_book.add_record("John Doe")
 record = address_book.find_record("John Doe")
