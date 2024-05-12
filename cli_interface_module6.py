@@ -1,16 +1,21 @@
 import re
+from collections import UserDict
 
 
-class Name:
-    def __init__(self, name):
-        self.name = name
+class Field:
+    def __init__(self, value):
+        self.value = value
 
 
-class Phone:
+class Name(Field):
+    pass
+
+
+class Phone(Field):
     def __init__(self, number):
         if not re.match(r'^\d{10}$', number):
             raise ValueError("Phone number must be 10 digits.")
-        self.number = number
+        super().__init__(number)
 
 
 class Record:
@@ -22,59 +27,52 @@ class Record:
         try:
             phone = Phone(number)
             self.phones.append(phone)
-            print(f"Phone number '{number}' added for {self.name.name}.")
+            print(f"Phone number '{number}' added for {self.name.value}.")
         except ValueError as e:
             print(e)
 
     def remove_phone(self, number):
         for phone in self.phones:
-            if phone.number == number:
+            if phone.value == number:
                 self.phones.remove(phone)
-                print(f"Phone number '{number}' removed for {self.name.name}.")
+                print(f"Phone number '{number}' removed for {self.name.value}.")
                 return
-        print(f"Phone number '{number}' not found for {self.name.name}.")
+        print(f"Phone number '{number}' not found for {self.name.value}.")
 
     def edit_phone(self, old_number, new_number):
         for phone in self.phones:
-            if phone.number == old_number:
-                phone.number = new_number
-                print(f"Phone number '{old_number}' edited to '{new_number}' for {self.name.name}.")
+            if phone.value == old_number:
+                phone.value = new_number
+                print(f"Phone number '{old_number}' edited to '{new_number}' for {self.name.value}.")
                 return
-        print(f"Phone number '{old_number}' not found for {self.name.name}.")
+        print(f"Phone number '{old_number}' not found for {self.name.value}.")
 
     def find_phone(self, number):
         for phone in self.phones:
-            if phone.number == number:
-                print(f"Phone number '{number}' found for {self.name.name}.")
+            if phone.value == number:
+                print(f"Phone number '{number}' found for {self.name.value}.")
                 return
-        print(f"Phone number '{number}' not found for {self.name.name}.")
+        print(f"Phone number '{number}' not found for {self.name.value}.")
 
 
-class AddressBook:
-    def __init__(self):
-        self.records = []
-
+class AddressBook(UserDict):
     def add_record(self, name):
-        record = Record(name)
-        self.records.append(record)
-        print(f"Record for {name} added to the address book.")
+        self.data[name] = Record(name)
 
     def find_record(self, name):
-        for record in self.records:
-            if record.name.name == name:
-                print(f"Record found for {name}.")
-                return record
+        if name in self.data:
+            return self.data[name]
         print(f"No record found for {name}.")
 
     def delete_record(self, name):
-        record = self.find_record(name)
-        if record:
-            self.records.remove(record)
+        if name in self.data:
+            del self.data[name]
             print(f"Record for {name} removed from the address book.")
+        else:
+            print(f"No record found for {name}.")
 
 
-
-
+# Приклад використання
 address_book = AddressBook()
 address_book.add_record("John Doe")
 record = address_book.find_record("John Doe")
