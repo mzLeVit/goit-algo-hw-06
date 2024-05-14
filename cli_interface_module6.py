@@ -6,6 +6,9 @@ class Field:
     def __init__(self, value):
         self.value = value
 
+    def __str__(self):
+        return self.value
+
 
 class Name(Field):
     pass
@@ -23,6 +26,9 @@ class Record:
         self.name = Name(name)
         self.phones = []
 
+    def __str__(self):
+        return f"Контактна особа: {self.name.value}, телефони: {'; '.join(str(p) for p in self.phones)}"
+    
     def add_phone(self, number):
         try:
             phone = Phone(number)
@@ -38,7 +44,7 @@ class Record:
                 return f"Phone number '{number}' removed for {self.name.value}."
         return f"Phone number '{number}' not found for {self.name.value}."
 
-    def edit_phone(self, old_number, new_number):   # AttributeError
+    def edit_phone(self, old_number, new_number):
         try:
             new_phone = Phone(new_number)
             for phone in self.phones:
@@ -57,11 +63,15 @@ class Record:
 
 
 class AddressBook(UserDict):
-    def add_record(self, name):
-        self.data[name] = Record(name)
+    def add_record(self, record):
+        if record.name.value not in self.data:
+            self.data[record.name.value] = record
+            return "Record added successfully"
+        else:
+            return "Record already exists"
 
     def find_record(self, name):
-        return self.data.get(name)  
+        return self.data.get(name)  # Використовуємо метод get(), який повертає None, якщо запис не знайдено
 
     def delete_record(self, name):
         if name in self.data:
@@ -105,7 +115,7 @@ if __name__ == "__main__":
 
     # Знаходження та редагування телефону для John
     john = book.find("John")
-    john.edit_phone("1234567890", "1112223333")    #AttributeError: 'NoneType' object has no attribute 'edit_phone'
+    john.edit_phone("1234567890", "1112223333")
 
     print(john)  # Виведення: Contact name: John, phones: 1112223333; 5555555555
 
