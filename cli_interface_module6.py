@@ -1,18 +1,12 @@
 import re
 from collections import UserDict
 
-
 class Field:
     def __init__(self, value):
         self.value = value
 
-    def __str__(self):
-        return self.value
-
-
 class Name(Field):
     pass
-
 
 class Phone(Field):
     def __init__(self, number):
@@ -20,15 +14,11 @@ class Phone(Field):
             raise ValueError("Phone number must be 10 digits.")
         super().__init__(number)
 
-
 class Record:
     def __init__(self, name):
         self.name = Name(name)
         self.phones = []
 
-    def __str__(self):
-        return f"Контактна особа: {self.name.value}, телефони: {'; '.join(str(p) for p in self.phones)}"
-    
     def add_phone(self, number):
         try:
             phone = Phone(number)
@@ -45,15 +35,15 @@ class Record:
         return f"Phone number '{number}' not found for {self.name.value}."
 
     def edit_phone(self, old_number, new_number):
-        try:
-            new_phone = Phone(new_number)
-            for phone in self.phones:
-                if phone.value == old_number:
+        for phone in self.phones:
+            if phone.value == old_number:
+                try:
+                    new_phone = Phone(new_number)
                     phone.value = new_number
                     return f"Phone number '{old_number}' edited to '{new_number}' for {self.name.value}."
-            return f"Phone number '{old_number}' not found for {self.name.value}."
-        except ValueError as e:
-            return str(e)
+                except ValueError as e:
+                    return str(e)
+        return f"Phone number '{old_number}' not found for {self.name.value}."
 
     def find_phone(self, number):
         for phone in self.phones:
@@ -61,31 +51,19 @@ class Record:
                 return phone
         return None
 
-
 class AddressBook(UserDict):
     def add_record(self, record):
-        if record.name.value not in self.data:
-            self.data[record.name.value] = record
-            return "Record added successfully"
-        else:
-            return "Record already exists"
+        self.data[record.name.value] = record
 
-    def find_record(self, name):
-        return self.data.get(name)  # Використовуємо метод get(), який повертає None, якщо запис не знайдено
+    def find(self, name):
+        return self.data.get(name, None)
 
-    def delete_record(self, name):
+    def delete(self, name):
         if name in self.data:
             del self.data[name]
             return f"Record for {name} removed from the address book."
         else:
             return f"No record found for {name}."
-
-    def find(self, param):
-        record = self.find_record(param)
-        if record:
-            return record
-        else:
-            return None
 
 
 
@@ -124,4 +102,4 @@ if __name__ == "__main__":
     print(f"{john.name}: {found_phone}")  # Виведення: 5555555555
 
     # Видалення запису Jane
-    book.delete_record("Jane")
+    book.delete("Jane")
